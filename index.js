@@ -1,6 +1,7 @@
 import express from "express";
 import { google } from "googleapis";
 import scrapeData from "./scrapeData/scrapeData.js";
+import axios from "axios";
 
 const app = express();
 let googleSheets; // Variable global para acceder a la instancia de Google Sheets API
