@@ -146,6 +146,7 @@ if (action === "compra") {
         updatedBtcAmount = 0; // Establecer el valor de BTC a 0
         const earningsEur = sellPriceBtc * btcToSell; // Calcular las ganancias en euros
         updatedEurTotal += earningsEur; // Añadir las ganancias a updatedEurTotal
+        lastAction = action;
       }
       
   
