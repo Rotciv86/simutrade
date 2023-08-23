@@ -34,13 +34,15 @@ async function whalesDifferences() {
     // Obtén el último valor de dataBtc registrado en la Hoja 2 (asume que está en la columna B)
     const lastDataBtc = parseFloat(lastRow[1]);
     console.log(lastDataBtc)
-
+    console.log(lastDataBtc - numericDataBtc)
     // Compara el valor actual de dataBtc con el valor en la última fila
     const threshold = 13; // Define un umbral pequeño para considerar la diferencia
     if (Math.abs(numericDataBtc - lastDataBtc) >= threshold) {
 
 
         let difference = numericDataBtc - lastDataBtc;
+
+        console.log(difference)
       // Si la variación es mayor o igual a 1.0 (ajusta según tus necesidades)
       const updatedRow = [new Date().toLocaleString(), numericDataBtc, difference, buyPriceBtc, sellPriceBtc];
 
