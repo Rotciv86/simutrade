@@ -2,6 +2,7 @@ import express from "express";
 import { google } from "googleapis";
 import scrapeData from "./scrapeData/scrapeData.js";
 import axios from "axios";
+import whalesDifferences from "./whalesDifference/whalesDifferences.js";
 
 const app = express();
 let googleSheets; // Variable global para acceder a la instancia de Google Sheets API
@@ -63,8 +64,6 @@ app.get("/", async (req, res) => {
 app.listen(1337, () => {
   console.log("Running on 1337");
 let initialBtcAmount = 0.1; // Cantidad inicial en BTC
-console.log(initialBtcAmount);
-
 let totalEur = 0; // Total de euros
 let firstAction = true; // Variable para controlar la primera acción
 let previousDataBtc = 0; // Valor previo de dataBtc
@@ -271,3 +270,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`La aplicación está escuchando en el puerto ${PORT}`);
 });
+
+setInterval(whalesDifferences, 60000);
