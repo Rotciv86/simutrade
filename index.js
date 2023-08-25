@@ -3,6 +3,9 @@ import { google } from "googleapis";
 import scrapeData from "./scrapeData/scrapeData.js";
 import axios from "axios";
 import whalesDifferences from "./whalesDifference/whalesDifferences.js";
+import oneHourWhalesDifference from "./whalesDifference/oneHourWhalesDifference.js";
+import fourHourWhalesDifference from "./whalesDifference/fourHourWhalesDifference.js";
+import dailyWhalesDifference from "./whalesDifference/dailyWhalesDifference.js";
 
 const app = express();
 let googleSheets; // Variable global para acceder a la instancia de Google Sheets API
@@ -271,4 +274,28 @@ app.listen(PORT, () => {
   console.log(`La aplicación está escuchando en el puerto ${PORT}`);
 });
 
+const fourHourInMiliSeconds = 4 * 60 * 60 * 1000;
+const dayInMiliSeconds = 24 * 60 * 60 * 1000;
+
+
 setInterval(whalesDifferences, 60000);
+setInterval(oneHourWhalesDifference, 3600000);
+setInterval(fourHourWhalesDifference, fourHourInMiliSeconds);
+setInterval(dailyWhalesDifference, dayInMiliSeconds);
+
+
+
+// async function updateSheetPeriodically() {
+//   while (true) {
+//     // Lógica para actualizar la hoja de cálculo aquí
+//     await whalesDifferences(); // Supongo que esta función realiza la actualización
+
+//     // Espera 12 horas (en milisegundos)
+//     const intervalInMilliseconds = 6 * 60 * 60 * 1000;
+//     await new Promise(resolve => setTimeout(resolve, intervalInMilliseconds));
+//   }
+// }
+
+// // Inicia la actualización periódica
+// updateSheetPeriodically();
+

@@ -2,7 +2,7 @@
 import { google } from "googleapis";
 import scrapeData from "../scrapeData/scrapeData.js"
 
-async function whalesDifferences() {
+async function fourHourWhalesDifference() {
   try {
     const auth = new google.auth.GoogleAuth({
       keyFile: "credentials.json",
@@ -16,7 +16,7 @@ async function whalesDifferences() {
     const googleSheets = google.sheets({ version: "v4", auth: client });
 
     // Obtén los valores de la Hoja 2 (asume que ya está configurada)
-    const range = "Hoja 2!A:E"; // Reemplaza con el rango adecuado
+    const range = "Hoja 4!A:E"; // Reemplaza con el rango adecuado
     const response = await googleSheets.spreadsheets.values.get({
       spreadsheetId,
       range,
@@ -36,8 +36,7 @@ async function whalesDifferences() {
     console.log(lastDataBtc)
     console.log(lastDataBtc - numericDataBtc)
     // Compara el valor actual de dataBtc con el valor en la última fila
-    const threshold = 5000; // Define un umbral pequeño para considerar la diferencia
-    if (Math.abs(numericDataBtc - lastDataBtc) >= threshold) {
+    const threshold = 13; // Define un umbral pequeño para considerar la diferencia
 
 
         let difference = numericDataBtc - lastDataBtc;
@@ -62,13 +61,11 @@ async function whalesDifferences() {
         resource,
       });
 
-      console.log("Nueva fila agregada a la Hoja 2.");
-    } else {
-      console.log("No se requiere actualización en la Hoja 2.");
-    }
+      console.log("Nueva fila agregada a la Hoja 4.");
+    
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
-export default whalesDifferences;
+export default fourHourWhalesDifference;
