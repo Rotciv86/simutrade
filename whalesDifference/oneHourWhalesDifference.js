@@ -2,7 +2,7 @@
 import { google } from "googleapis";
 import scrapeData from "../scrapeData/scrapeData.js"
 
-async function periodicWhalesDifference() {
+async function oneHourWhalesDifference() {
   try {
     const auth = new google.auth.GoogleAuth({
       keyFile: "credentials.json",
@@ -61,11 +61,11 @@ async function periodicWhalesDifference() {
         resource,
       });
 
-      console.log("Nueva fila agregada a la Hoja 2.");
+      console.log("Nueva fila agregada a la Hoja 3.");
     
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
-export default periodicWhalesDifference;
+export default oneHourWhalesDifference;
