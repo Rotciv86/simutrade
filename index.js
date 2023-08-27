@@ -69,7 +69,6 @@ app.listen(1337, () => {
 let initialBtcAmount = 0.1; // Cantidad inicial en BTC
 let totalEur = 0; // Total de euros
 let firstAction = true; // Variable para controlar la primera acción
-let previousDataBtc = 0; // Valor previo de dataBtc
 let lastAction = "";
 let lastBuyedPrice = 0;
 let lastSelledPrice = 0;
@@ -130,7 +129,7 @@ let lastSelledPrice = 0;
       const formattedDate = new Date().toLocaleString('es-ES', dateOptions);
       // Calcular la diferencia con respecto al valor anterior
 
-      const previousDataBtc = parseFloat(lastRow[4]);
+      let previousDataBtc = parseFloat(lastRow[4]);
       
 
       let difference;
@@ -284,7 +283,6 @@ if (action === "compra") {
     // Actualizar los valores y la última acción
     initialBtcAmount = updatedBtcAmount;
     totalEur = updatedEurTotal;
-    previousDataBtc = dataBtc;
     // lastAction = action;
 
     console.log("lastAction:", lastAction);
