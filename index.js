@@ -76,7 +76,7 @@ let lastSelledPrice = 0;
   // Call scrapeData every 5 minutes
   setInterval(async () => {
     try {
-      if (!googleSheets) {
+      
         const auth = new google.auth.GoogleAuth({
           keyFile: "credentials.json",
           scopes: "https://www.googleapis.com/auth/spreadsheets",
@@ -86,8 +86,9 @@ let lastSelledPrice = 0;
         const client = await auth.getClient();
 
         // Instance of Google Sheets API
-        googleSheets = google.sheets({ version: "v4", auth: client });
-      }
+        const spreadsheetId = "1r-jUnxB0CD_PRuuA_KP1Y5l8ibap6vckTmbtgN522m8"; // Reemplaza con el ID de tu hoja de cálculo
+        const googleSheets = google.sheets({ version: "v4", auth: client });
+      
 
       //         // Obtener el valor de la última casilla de la columna B (BTC)
       // const getLastBtcValue = await googleSheets.spreadsheets.values.get({
@@ -103,6 +104,16 @@ let lastSelledPrice = 0;
       // // Asignar el último valor de BTC como initialBtcAmount
       //   initialBtcAmount = parseFloat(lastBtcValue);
 
+      const range = "Hoja 1!A:E"; // Reemplaza con el rango adecuado
+      const response = await googleSheets.spreadsheets.values.get({
+        spreadsheetId,
+        range,
+      });
+  
+      const values = response.data.values || [];
+      const lastRow = values[values.length - 1]; // Última fila de datos
+      console.log(lastRow)
+
         console.log(initialBtcAmount);
 
 
@@ -114,9 +125,27 @@ let lastSelledPrice = 0;
       const formattedDataBtc = numericDataBtc.toFixed(7); // Ajustar la cantidad de decimales// Ajustar la cantidad de decimales
       const formattedBuyPriceBtc = buyPriceBtc.toFixed(2); // Ajustar la cantidad de decimales
       const formattedSellPriceBtc = sellPriceBtc.toFixed(2); // Ajustar la cantidad de decimales
-  
+
+      const dateOptions = { timeZone: 'Europe/Madrid' };
+      const formattedDate = new Date().toLocaleString('es-ES', dateOptions);
       // Calcular la diferencia con respecto al valor anterior
-      const difference = dataBtc - previousDataBtc;
+
+      const previousDataBtc = parseFloat(lastRow[4]);
+      
+
+      let difference;
+
+      if (firstAction) {
+
+        difference = 0;
+
+      } else {
+
+        difference = dataBtc - previousDataBtc
+
+      }
+
+
   
       // Definir umbrales para compra y venta
       const buyThreshold = 5000;
@@ -127,11 +156,41 @@ let lastSelledPrice = 0;
       let updatedBtcAmount = initialBtcAmount;
       let updatedEurTotal = totalEur;
 
+
+      if (Math.abs(difference) >= buyThreshold) {
+        
+          action = "compra"; // Define la acción como compra si difference es positivo
+      }else if (Math.abs(difference) <= sellThreshold){
+          action = "venta"; // Define la acción como venta si difference es negativo
+        
+      }
+
       if (firstAction) {
         // La primera acción debe ser una venta
-        action = "venta";
-        lastAction = action;
+        const updatedRow = [
+          formattedDate,
+          updatedBtcAmount,
+          updatedEurTotal,
+          action,
+          numericDataBtc, // Usar los valores formateados
+          formattedBuyPriceBtc,
+          formattedSellPriceBtc,
+        ];
+    
+        // Agregar la fila a la hoja de cálculo
+        const resource = {
+          values: [updatedRow],
+        };
+    
+        await googleSheets.spreadsheets.values.append({
+          spreadsheetId: "1r-jUnxB0CD_PRuuA_KP1Y5l8ibap6vckTmbtgN522m8",
+          range: "Hoja 1!A:G",
+          valueInputOption: "USER_ENTERED",
+          resource,
+        });
+
         firstAction = false; // Desactivar la bandera después de la primera acción
+
       } else if (lastAction === "venta" && difference > buyThreshold && buyPriceBtc * 1.03 < lastSelledPrice) {
         action = "compra";
         console.log("Debugging compra:");
@@ -178,9 +237,11 @@ if (action === "compra") {
       
   
       if(action === "compra" || action === "venta"){
+
+  
       // Construir la fila actualizada con la acción y las cantidades
       const updatedRow = [
-        getCurrentDateTime(),
+        formattedDate,
         updatedBtcAmount,
         updatedEurTotal,
         action,
@@ -217,7 +278,7 @@ if (action === "compra") {
       console.log("buyPriceBtc:", buyPriceBtc);
       console.log("updatedBtcAmount:", updatedBtcAmount);
       console.log("totalEur:", totalEur);
-      console.log(getCurrentDateTime());
+      // console.log(getCurrentDateTime());
     }
 
     // Actualizar los valores y la última acción
@@ -235,11 +296,7 @@ if (action === "compra") {
   }, 60000);
  }); // 5 minutos (300,000 milisegundos)
 
-// Function to get current date and time
-function getCurrentDateTime() {
-  const now = new Date();
-  return now.toLocaleString();
-}
+
 
 
 
