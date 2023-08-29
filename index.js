@@ -161,10 +161,11 @@ app.listen(1337, () => {
       let updatedEurTotal = totalEur;
 
 
-      if (Math.abs(difference) >= buyThreshold) {
+      if (difference >= buyThreshold) {
         
           action = "compra"; // Define la acción como compra si difference es positivo
-      }else if (Math.abs(difference) <= sellThreshold){
+      }else if (difference <= sellThreshold){
+
           action = "venta"; // Define la acción como venta si difference es negativo
         
       }
@@ -195,14 +196,14 @@ app.listen(1337, () => {
 
         firstAction = false; // Desactivar la bandera después de la primera acción
 
-      } else if (lastAction === "venta" && difference > buyThreshold && buyPriceBtc * 1.03 < lastSelledPrice) {
+      } else if (lastAction === "venta" && difference > buyThreshold && buyPriceBtc * 1.0133 < lastSelledPrice) {
         action = "compra";
         console.log("Debugging compra:");
         console.log("Total EUR:", totalEur);
         console.log("Buy Price BTC:", buyPriceBtc);
         console.log("Updated BTC Amount:", updatedBtcAmount);
          // Después de una venta, la siguiente acción debe ser compra
-      } else if (lastAction === "compra" && difference < sellThreshold && sellPriceBtc > lastBuyedPrice * 1.03) {
+      } else if (lastAction === "compra" && difference < sellThreshold && sellPriceBtc > lastBuyedPrice * 1.0133) {
         action = "venta"; // Después de una compra, la siguiente acción debe ser venta
         console.log("Debugging venta:");
         console.log("Total EUR:", totalEur);
