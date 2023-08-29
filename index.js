@@ -64,14 +64,18 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.listen(1337, () => {
-  console.log("Running on 1337");
-let initialBtcAmount = 0.1; // Cantidad inicial en BTC
+let initialBtcAmount; // Cantidad inicial en BTC
 let totalEur = 0; // Total de euros
 let firstAction = true; // Variable para controlar la primera acción
 let lastAction = "";
 let lastBuyedPrice = 0;
 let lastSelledPrice = 0;
+
+app.listen(1337, () => {
+  console.log("Running on 1337");
+});
+
+
   // Call scrapeData every 5 minutes
   setInterval(async () => {
     try {
@@ -89,19 +93,20 @@ let lastSelledPrice = 0;
         const googleSheets = google.sheets({ version: "v4", auth: client });
       
 
-      //         // Obtener el valor de la última casilla de la columna B (BTC)
-      // const getLastBtcValue = await googleSheets.spreadsheets.values.get({
-      //   spreadsheetId,
-      //   range: "Hoja 1!B:B", // Rango de la columna B
-      //   valueRenderOption: "FORMULA", // Obtener el valor calculado en lugar de la fórmula
-      //   dateTimeRenderOption: "FORMATTED_STRING", // Obtener fechas y horas en formato legible
-      // });
+              // Obtener el valor de la última casilla de la columna B (BTC)
+      const getLastBtcValue = await googleSheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Hoja 1!B:B", // Rango de la columna B
+        valueRenderOption: "FORMULA", // Obtener el valor calculado en lugar de la fórmula
+        dateTimeRenderOption: "FORMATTED_STRING", // Obtener fechas y horas en formato legible
+      });
   
-      // const btcValues = getLastBtcValue.data.values || [];
-      // const lastBtcValue = btcValues[btcValues.length - 1][0]; // El último valor en la columna B
+      const btcValues = getLastBtcValue.data.values || [];
+      const lastBtcValue = btcValues[btcValues.length - 1][0]; // El último valor en la columna B
   
-      // // Asignar el último valor de BTC como initialBtcAmount
-      //   initialBtcAmount = parseFloat(lastBtcValue);
+      // Asignar el último valor de BTC como initialBtcAmount
+
+      lastBtcValue ? initialBtcAmount = lastBtcValue : initialBtcAmount = 0.2;
 
       const range = "Hoja 1!A:E"; // Reemplaza con el rango adecuado
       const response = await googleSheets.spreadsheets.values.get({
@@ -144,11 +149,11 @@ let lastSelledPrice = 0;
 
       }
 
-
+    
   
       // Definir umbrales para compra y venta
-      const buyThreshold = 5000;
-      const sellThreshold = -5000;
+      const buyThreshold = 330;
+      const sellThreshold = -330;
   
       // Determinar la acción en función de las diferencias
       let action = "";
@@ -292,7 +297,7 @@ if (action === "compra") {
       console.error("Error:", error);
     }
   }, 60000);
- }); // 5 minutos (300,000 milisegundos)
+  // 5 minutos (300,000 milisegundos)
 
 
 
