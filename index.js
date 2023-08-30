@@ -178,8 +178,8 @@ app.listen(1337, () => {
     
   
       // Definir umbrales para compra y venta
-      const buyThreshold = 0.3;
-      const sellThreshold = -0.3;
+      const buyThreshold = 330;
+      const sellThreshold = -330;
   
       // Determinar la acción en función de las diferencias
       let action = "";
