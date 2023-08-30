@@ -65,7 +65,7 @@ app.get("/", async (req, res) => {
 });
 
 let initialBtcAmount; // Cantidad inicial en BTC
-let totalEur = 0; // Total de euros
+let totalEur; // Total de euros
 let firstAction = true; // Variable para controlar la primera acción
 let lastAction = "";
 let lastBuyedPrice = 0;
@@ -106,8 +106,34 @@ app.listen(1337, () => {
   
       // Asignar el último valor de BTC como initialBtcAmount
 
-      lastBtcValue ? initialBtcAmount = lastBtcValue : initialBtcAmount = 0.2;
+      if (typeof initialBtcAmount === 'undefined') {
+        if (lastBtcValue === 0) {
+          initialBtcAmount = 0;
+        } else {
+          initialBtcAmount = lastBtcValue || 0.3;
+        }
+      }
+      
+      const getLastEurValue = await googleSheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Hoja 1!C:C", // Rango de la columna B
+        valueRenderOption: "FORMULA", // Obtener el valor calculado en lugar de la fórmula
+        dateTimeRenderOption: "FORMATTED_STRING", // Obtener fechas y horas en formato legible
+      });
+  
+      const eurValues = getLastEurValue.data.values || [];
+      const lastEurValue = eurValues[eurValues.length - 1][0];
 
+      if (typeof totalEur === 'undefined') {
+        if (lastEurValue === 0) {
+          totalEur = 0;
+        } else {
+          totalEur = lastEurValue || 33000;
+        }
+      }
+      
+
+      
       const range = "Hoja 1!A:E"; // Reemplaza con el rango adecuado
       const response = await googleSheets.spreadsheets.values.get({
         spreadsheetId,
@@ -152,8 +178,8 @@ app.listen(1337, () => {
     
   
       // Definir umbrales para compra y venta
-      const buyThreshold = 330;
-      const sellThreshold = -330;
+      const buyThreshold = 0.3;
+      const sellThreshold = -0.3;
   
       // Determinar la acción en función de las diferencias
       let action = "";
@@ -161,14 +187,7 @@ app.listen(1337, () => {
       let updatedEurTotal = totalEur;
 
 
-      if (difference >= buyThreshold) {
-        
-          action = "compra"; // Define la acción como compra si difference es positivo
-      }else if (difference <= sellThreshold){
 
-          action = "venta"; // Define la acción como venta si difference es negativo
-        
-      }
 
       if (firstAction) {
         // La primera acción debe ser una venta
@@ -196,14 +215,28 @@ app.listen(1337, () => {
 
         firstAction = false; // Desactivar la bandera después de la primera acción
 
-      } else if (lastAction === "venta" && difference > buyThreshold && buyPriceBtc * 1.0133 < lastSelledPrice) {
+      } else if (!lastAction) {
+
+        if (difference >= buyThreshold) {
+        
+          lastAction = "venta"; // Define la acción como compra si difference es positivo
+
+        } else if (difference <= sellThreshold){
+
+          lastAction = "compra"; // Define la acción como venta si difference es negativo
+        
+      }
+      
+      
+      
+      } else if (lastAction === "venta" && difference > buyThreshold /* && buyPriceBtc * 1.0133 < lastSelledPrice */) {
         action = "compra";
         console.log("Debugging compra:");
         console.log("Total EUR:", totalEur);
         console.log("Buy Price BTC:", buyPriceBtc);
         console.log("Updated BTC Amount:", updatedBtcAmount);
          // Después de una venta, la siguiente acción debe ser compra
-      } else if (lastAction === "compra" && difference < sellThreshold && sellPriceBtc > lastBuyedPrice * 1.0133) {
+      } else if (lastAction === "compra" && difference < sellThreshold /* && sellPriceBtc > lastBuyedPrice * 1.0133 */) {
         action = "venta"; // Después de una compra, la siguiente acción debe ser venta
         console.log("Debugging venta:");
         console.log("Total EUR:", totalEur);
@@ -229,16 +262,24 @@ if (action === "compra") {
   } else {
     console.log("No se pudo comprar debido a fondos insuficientes");
   }
+
+  } else if (action === "venta") {
+  console.log('\x1b[31m venta \x1b[0m');
+
+  if (updatedBtcAmount > 0) {
+    const btcToSell = updatedBtcAmount; // Guardar el valor actual de BTC
+    updatedBtcAmount = 0; // Establecer el valor de BTC a 0
+    const earningsEur = sellPriceBtc * btcToSell; // Calcular las ganancias en euros
+    updatedEurTotal += earningsEur; // Añadir las ganancias a updatedEurTotal
+    lastAction = action;
+    lastSelledPrice = sellPriceBtc;
+
+    console.log("Total EUR después de la venta:", updatedEurTotal);
+    console.log("BTC después de la venta:", updatedBtcAmount);
+  } else {
+    console.log("No se pudo vender porque no tienes BTC");
+  }
 }
- else if (action === "venta") {
-        console.log('\x1b[31m venta \x1b[0m');
-        const btcToSell = updatedBtcAmount; // Guardar el valor actual de BTC
-        updatedBtcAmount = 0; // Establecer el valor de BTC a 0
-        const earningsEur = sellPriceBtc * btcToSell; // Calcular las ganancias en euros
-        updatedEurTotal += earningsEur; // Añadir las ganancias a updatedEurTotal
-        lastAction = action;
-        lastSelledPrice = sellPriceBtc;
-      }
       
   
       if(action === "compra" || action === "venta"){
