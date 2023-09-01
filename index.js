@@ -229,19 +229,36 @@ app.listen(1337, () => {
       
       
       
-      } else if (lastAction === "venta" && buyPriceBtc * 1.0133 < lastSelledPrice ) {
+      } else if (lastAction === "venta") {
+
+        if (buyPriceBtc * 1.00333 < lastSelledPrice) {
         action = "compra";
         console.log("Debugging compra:");
         console.log("Total EUR:", totalEur);
         console.log("Buy Price BTC:", buyPriceBtc);
         console.log("Updated BTC Amount:", updatedBtcAmount);
+
+        } else if (buyPriceBtc * 1.00133 > lastSelledPrice) {
+
+          action = "compra";
+
+        }
          // Después de una venta, la siguiente acción debe ser compra
-      } else if (lastAction === "compra" && sellPriceBtc > lastBuyedPrice * 1.0133) {
+      } else if (lastAction === "compra") {
+
+          if (sellPriceBtc > lastBuyedPrice * 1.00333) {
+
         action = "venta"; // Después de una compra, la siguiente acción debe ser venta
         console.log("Debugging venta:");
         console.log("Total EUR:", totalEur);
         console.log("Sell Price BTC:", sellPriceBtc);
         console.log("Updated BTC Amount:", updatedBtcAmount);
+
+          } else if (sellPriceBtc < lastBuyedPrice * 1.00133) {
+
+            action = "venta";
+
+          }
       } 
   
 // Realizar la acción y actualizar valores si corresponde
