@@ -465,7 +465,7 @@ const dayInMiliSeconds = 24 * 60 * 60 * 1000;
 
 
 setInterval(whalesDifferences, 60000);
-setInterval(oneHourWhalesDifference, 3600000);
+// setInterval(oneHourWhalesDifference, 3600000);
 setInterval(fourHourWhalesDifference, fourHourInMiliSeconds);
 setInterval(dailyWhalesDifference, dayInMiliSeconds);
 
