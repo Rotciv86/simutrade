@@ -91,6 +91,63 @@ app.listen(1337, () => {
         // Instance of Google Sheets API
         const spreadsheetId = "1r-jUnxB0CD_PRuuA_KP1Y5l8ibap6vckTmbtgN522m8"; // Reemplaza con el ID de tu hoja de cálculo
         const googleSheets = google.sheets({ version: "v4", auth: client });
+
+
+
+        async function setRowBackgroundColor(spreadsheetId, range, color) {
+          try {
+            const auth = await google.auth.getClient();
+        
+            const sheets = google.sheets({ version: "v4", auth });
+        
+            let red = 0;
+            let green = 0;
+            let blue = 0;
+        
+            if (color === "verde") {
+              green = 1; // Cambia a 1 para verde
+            } else if (color === "rojo") {
+              red = 1; // Cambia a 1 para rojo
+            }
+        
+            await sheets.spreadsheets.batchUpdate({
+              spreadsheetId,
+              resource: {
+                requests: [
+                  {
+                    repeatCell: {
+                      range,
+                      cell: {
+                        userEnteredFormat: {
+                          backgroundColor: { red, green, blue },
+                        },
+                      },
+                      fields: "userEnteredFormat.backgroundColor",
+                    },
+                  },
+                ],
+              },
+            });
+          } catch (error) {
+            console.error("Error al cambiar el color de fondo:", error);
+          }
+        }
+        
+        
+        // Obtén el número de fila de la última celda no vacía en la columna A
+        const getLastRowNumber = await googleSheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: "Hoja 1!A:A", // Reemplaza esto con la columna que desees
+          valueRenderOption: "UNFORMATTED_VALUE", // Para obtener el número de fila sin formato
+        });
+
+        const lastRowNumber = getLastRowNumber.data.values.length;
+
+        // Construye el rango de celdas para la última fila
+        const lastRowRange = `Hoja 1!A${lastRowNumber}:G${lastRowNumber}`;
+
+        // Cambia el color de fondo de la última fila a verde (por ejemplo)
+
       
 
               // Obtener el valor de la última casilla de la columna B (BTC)
@@ -232,13 +289,19 @@ app.listen(1337, () => {
       } else if (lastAction === "venta") {
 
         if (buyPriceBtc * 1.00333 < lastSelledPrice) {
+
+        await setRowBackgroundColor(spreadsheetId, lastRowRange, "verde");
+  
         action = "compra";
+
         console.log("Debugging compra:");
         console.log("Total EUR:", totalEur);
         console.log("Buy Price BTC:", buyPriceBtc);
         console.log("Updated BTC Amount:", updatedBtcAmount);
 
         } else if (buyPriceBtc * 1.00133 > lastSelledPrice) {
+
+          await setRowBackgroundColor(spreadsheetId, lastRowRange, "rojo");
 
           action = "compra";
 
@@ -248,13 +311,17 @@ app.listen(1337, () => {
 
           if (sellPriceBtc > lastBuyedPrice * 1.00333) {
 
-        action = "venta"; // Después de una compra, la siguiente acción debe ser venta
-        console.log("Debugging venta:");
-        console.log("Total EUR:", totalEur);
-        console.log("Sell Price BTC:", sellPriceBtc);
-        console.log("Updated BTC Amount:", updatedBtcAmount);
+          await setRowBackgroundColor(spreadsheetId, lastRowRange, "verde");
+
+          action = "venta"; // Después de una compra, la siguiente acción debe ser venta
+          console.log("Debugging venta:");
+          console.log("Total EUR:", totalEur);
+          console.log("Sell Price BTC:", sellPriceBtc);
+          console.log("Updated BTC Amount:", updatedBtcAmount);
 
           } else if (sellPriceBtc < lastBuyedPrice * 1.00133) {
+
+            await setRowBackgroundColor(spreadsheetId, lastRowRange, "rojo");
 
             action = "venta";
 
