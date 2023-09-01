@@ -242,6 +242,8 @@ app.listen(1337, () => {
       let action = "";
       let updatedBtcAmount = initialBtcAmount;
       let updatedEurTotal = totalEur;
+      let effectivePurchase = true;
+      let effectiveSell = true;
 
 
 
@@ -344,6 +346,9 @@ if (action === "compra") {
     console.log("BTC después de la compra:", updatedBtcAmount);
     lastAction = action;
   } else {
+
+    effectivePurchase = false;
+
     console.log("No se pudo comprar debido a fondos insuficientes");
   }
 
@@ -361,12 +366,15 @@ if (action === "compra") {
     console.log("Total EUR después de la venta:", updatedEurTotal);
     console.log("BTC después de la venta:", updatedBtcAmount);
   } else {
+
+    effectiveSell = false;
+
     console.log("No se pudo vender porque no tienes BTC");
   }
 }
       
   
-      if(action === "compra" || action === "venta"){
+      if((action === "compra" && effectivePurchase) || (action === "venta" && effectiveSell)){
 
   
       // Construir la fila actualizada con la acción y las cantidades
