@@ -96,20 +96,25 @@ app.listen(1337, () => {
 
         async function setRowBackgroundColor(spreadsheetId, range, color) {
           try {
-            const auth = await google.auth.getClient();
+            const auth = new google.auth.GoogleAuth({
+              keyFile: "credentials.json",
+              scopes: "https://www.googleapis.com/auth/spreadsheets",
+            });
         
-            const sheets = google.sheets({ version: "v4", auth });
-        
+            const client = await auth.getClient(); // Usar auth en lugar de crear una nueva instancia
+            
+            const sheets = google.sheets({ version: "v4", auth: client });
+            
             let red = 0;
             let green = 0;
             let blue = 0;
-        
+            
             if (color === "verde") {
               green = 1; // Cambia a 1 para verde
             } else if (color === "rojo") {
               red = 1; // Cambia a 1 para rojo
             }
-        
+            
             await sheets.spreadsheets.batchUpdate({
               spreadsheetId,
               resource: {
@@ -132,6 +137,7 @@ app.listen(1337, () => {
             console.error("Error al cambiar el color de fondo:", error);
           }
         }
+        
         
         
         // Obtén el número de fila de la última celda no vacía en la columna A
