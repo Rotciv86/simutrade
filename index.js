@@ -307,7 +307,7 @@ app.listen(1337, () => {
         console.log("Buy Price BTC:", buyPriceBtc);
         console.log("Updated BTC Amount:", updatedBtcAmount);
 
-        } else if (buyPriceBtc * 1.00133 > lastSelledPrice) {
+        } else if (buyPriceBtc > lastSelledPrice * 1.033) {
 
           await setRowBackgroundColor(spreadsheetId, lastRowRange, "rojo");
 
@@ -327,7 +327,7 @@ app.listen(1337, () => {
           console.log("Sell Price BTC:", sellPriceBtc);
           console.log("Updated BTC Amount:", updatedBtcAmount);
 
-          } else if (sellPriceBtc < lastBuyedPrice * 1.00133) {
+          } else if (sellPriceBtc * 1.033 < lastBuyedPrice) {
 
             await setRowBackgroundColor(spreadsheetId, lastRowRange, "rojo");
 
