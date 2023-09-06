@@ -341,13 +341,12 @@ if (action === "compra") {
   console.log('\x1b[32m compra \x1b[0m');
   const additionalBtcAmount = totalEur / buyPriceBtc;
   updatedBtcAmount += additionalBtcAmount;
-  const costEur = buyPriceBtc * updatedBtcAmount;
   lastBuyedPrice = buyPriceBtc;
   console.log("Total EUR antes de la compra:", totalEur);
-  console.log("Costo de la compra en EUR:", costEur);
-  if (totalEur >= costEur) {
+  console.log("Costo de la compra en EUR:", totalEur);
+  if (totalEur > 0) {
     console.log("BTC adquirido en la compra:", additionalBtcAmount);
-    updatedEurTotal -= costEur;
+    updatedEurTotal -= totalEur;
     console.log("Total EUR después de la compra:", updatedEurTotal);
     console.log("BTC después de la compra:", updatedBtcAmount);
     lastAction = action;
