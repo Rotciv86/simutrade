@@ -65,6 +65,20 @@ const scrapeData = () => {
               .catch((error) => {
                 reject(error);
               });
+
+              axios.get("https://app.uniswap.org/#/swap")
+                .then((response) => {
+                  const html = response.data;
+                  const $ = cheerio.load(html);
+  
+                let desiredNodeBuy = $("input#swap-currency-output");
+
+                const buyPriceEth = +desiredNodeBuy.attr('value');
+                console.log(buyPriceEth);
+                })
+                .catch((error) => {
+                  reject(error);
+                });
           } else {
             reject("Nodo no encontrado");
           }
