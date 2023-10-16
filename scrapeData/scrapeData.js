@@ -1,9 +1,12 @@
 import axios from "axios";
 import * as cheerio from 'cheerio';
 
+const API_KEY = '7ef5d0525a797b581409fbcc7d777db5';
+const SCRAPER_API_URL = `http://api.scraperapi.com?api_key=${API_KEY}&url=`;
+
 const scrapeData = () => {
     return new Promise((resolve, reject) => {
-      axios.get("https://bitinfocharts.com/top-100-richest-bitcoin-addresses.html")
+      axios.get(SCRAPER_API_URL + "https://bitinfocharts.com/top-100-richest-bitcoin-addresses.html")
         .then((response) => {
           const html = response.data;
           const $ = cheerio.load(html);
