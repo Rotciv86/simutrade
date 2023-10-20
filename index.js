@@ -435,7 +435,7 @@ if (action === "compra") {
     } catch (error) {
       console.error("Error:", error);
     }
-  }, 60000);
+  }, 6000);
   // 5 minutos (300,000 milisegundos)
 
 
