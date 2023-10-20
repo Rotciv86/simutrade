@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as cheerio from 'cheerio';
+import {HttpProxyAgent} from "http-proxy-agent"
 
 const proxyOptions = {
   proxy: {
@@ -16,13 +17,18 @@ const proxyOptions = {
 const scrapeData = () => {
     return new Promise((resolve, reject) => {
 
-      axios.get("http://ipv4.webshare.io/", proxyOptions)
-      .then((response) => {
-        console.log("Conexión del Proxy: "+response.data);
+      const axiosInstance = axios.create({
+        httpAgent: new HttpProxyAgent('http://p.webshare.io:80', {
+          auth: {
+            username: 'jacrzecm-rotate',
+            password: 'bpgru0ovjy9c'
+          }
+        })
+      });
 
       
 
-      axios.get("https://bitinfocharts.com/top-100-richest-bitcoin-addresses.html")
+      axiosInstance.get("https://bitinfocharts.com/top-100-richest-bitcoin-addresses.html")
         .then((response) => {
           const html = response.data;
           const $ = cheerio.load(html);
@@ -94,10 +100,8 @@ const scrapeData = () => {
           reject(error);
         });
     })
-    .catch((error) => {
-      console.error(error)
-    });
-    });
+  
+    
   }
   
   export default scrapeData;
