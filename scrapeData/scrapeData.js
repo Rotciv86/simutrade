@@ -1,18 +1,24 @@
 import axios from "axios";
 import * as cheerio from 'cheerio';
-import request from "request-promise"
 
 const proxyOptions = {
-  url: 'http://ipv4.webshare.io/',
-  proxy: 'http://jacrzecm-rotate:bpgru0ovjy9c@p.webshare.io:80'
+  proxy: {
+    host: 'p.webshare.io',
+    port: 80,
+    auth: {
+      username: 'jacrzecm-rotate',
+      password: 'bpgru0ovjy9c'
+    },
+    protocol: 'http'
+  }
 };
 
 const scrapeData = () => {
     return new Promise((resolve, reject) => {
 
-      request(proxyOptions)
-      .then((data) => {
-        console.log("Conexión del Proxy: "+data);
+      axios.get("http://ipv4.webshare.io/", proxyOptions)
+      .then((response) => {
+        console.log("Conexión del Proxy: "+response.data);
 
       
 
@@ -87,6 +93,9 @@ const scrapeData = () => {
         .catch((error) => {
           reject(error);
         });
+    })
+    .catch((error) => {
+      console.error(error)
     });
     });
   }
