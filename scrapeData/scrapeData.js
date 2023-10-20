@@ -1,12 +1,22 @@
 import axios from "axios";
 import * as cheerio from 'cheerio';
+import request from "request-promise"
 
-const API_KEY = '7ef5d0525a797b581409fbcc7d777db5';
-const SCRAPER_API_URL = `http://api.scraperapi.com?api_key=${API_KEY}&url=`;
+const proxyOptions = {
+  url: 'http://ipv4.webshare.io/',
+  proxy: 'http://jacrzecm-rotate:bpgru0ovjy9c@p.webshare.io:80'
+};
 
 const scrapeData = () => {
     return new Promise((resolve, reject) => {
-      axios.get(SCRAPER_API_URL + "https://bitinfocharts.com/top-100-richest-bitcoin-addresses.html")
+
+      request(proxyOptions)
+      .then((data) => {
+        console.log("Conexión del Proxy: "+data);
+
+      
+
+      axios.get("https://bitinfocharts.com/top-100-richest-bitcoin-addresses.html")
         .then((response) => {
           const html = response.data;
           const $ = cheerio.load(html);
@@ -69,19 +79,7 @@ const scrapeData = () => {
                 reject(error);
               });
 
-              axios.get("https://app.uniswap.org/#/swap")
-                .then((response) => {
-                  const html = response.data;
-                  const $ = cheerio.load(html);
-  
-                let desiredNodeBuy = $("input#swap-currency-output");
-
-                const buyPriceEth = +desiredNodeBuy.attr('value');
-                console.log(buyPriceEth);
-                })
-                .catch((error) => {
-                  reject(error);
-                });
+          
           } else {
             reject("Nodo no encontrado");
           }
@@ -89,6 +87,7 @@ const scrapeData = () => {
         .catch((error) => {
           reject(error);
         });
+    });
     });
   }
   
