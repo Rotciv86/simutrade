@@ -18,12 +18,8 @@ const scrapeData = () => {
     return new Promise((resolve, reject) => {
 
       const axiosInstance = axios.create({
-        httpAgent: new HttpProxyAgent('http://p.webshare.io:80', {
-          auth: {
-            username: 'jacrzecm-rotate',
-            password: 'bpgru0ovjy9c'
-          }
-        })
+        url: 'http://ipv4.webshare.io/',
+        proxy: 'http://jacrzecm-rotate:bpgru0ovjy9c@p.webshare.io:80'
       });
 
       
