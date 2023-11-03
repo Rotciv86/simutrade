@@ -1,6 +1,5 @@
 import axios from "axios";
 import * as cheerio from 'cheerio';
-import {HttpProxyAgent} from "http-proxy-agent"
 
 const proxyOptions = {
   proxy: {
@@ -17,15 +16,13 @@ const proxyOptions = {
 const scrapeData = () => {
     return new Promise((resolve, reject) => {
 
-      const axiosInstance = axios.create({
-        url: 'http://ipv4.webshare.io/',
-        proxy: 'http://jacrzecm-rotate:bpgru0ovjy9c@p.webshare.io:80'
-      });
+      const axiosInstance = axios.create(proxyOptions);
 
       
 
       axiosInstance.get("https://bitinfocharts.com/top-100-richest-bitcoin-addresses.html")
         .then((response) => {
+      
           const html = response.data;
           const $ = cheerio.load(html);
   
@@ -33,6 +30,16 @@ const scrapeData = () => {
           // Verificar si se encontró el nodo deseado y obtener los valores
           if (desiredNode.length > 0) {
             const dataBtc = desiredNode.attr('data-val');
+
+            axiosInstance.get('https://httpbin.org/ip')
+            .then((response) => {
+              const ipAddress = response.data.origin;
+              console.log('Dirección IP utilizada:', ipAddress);
+              console.log('Configuración del proxy:', response.config.proxy);
+            })
+            .catch((error) => {
+              console.error('Error al obtener la dirección IP:', error);
+            }); 
   
             axios.get("https://www.bitcoin.de/de/btceur/market")
               .then((response) => {
