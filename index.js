@@ -10,59 +10,59 @@ import dailyWhalesDifference from "./whalesDifference/dailyWhalesDifference.js";
 const app = express();
 let googleSheets; // Variable global para acceder a la instancia de Google Sheets API
 
-app.get("/", async (req, res) => {
-  try {
-    const auth = new google.auth.GoogleAuth({
-      keyFile: "credentials.json",
-      scopes: "https://www.googleapis.com/auth/spreadsheets",
-    });
+// app.get("/", async (req, res) => {
+//   try {
+//     const auth = new google.auth.GoogleAuth({
+//       keyFile: "credentials.json",
+//       scopes: "https://www.googleapis.com/auth/spreadsheets",
+//     });
 
-    // Create client instance for auth
-    const client = await auth.getClient();
+//     // Create client instance for auth
+//     const client = await auth.getClient();
 
-    const spreadsheetId = "1r-jUnxB0CD_PRuuA_KP1Y5l8ibap6vckTmbtgN522m8";
+//     const spreadsheetId = "1r-jUnxB0CD_PRuuA_KP1Y5l8ibap6vckTmbtgN522m8";
 
-    // Instance of Google Sheets API
-    googleSheets = google.sheets({ version: "v4", auth: client });
+//     // Instance of Google Sheets API
+//     googleSheets = google.sheets({ version: "v4", auth: client });
 
-    // Get metadata about spreadsheet
-    const metaData = await googleSheets.spreadsheets.get({
-      spreadsheetId,
-    });
+//     // Get metadata about spreadsheet
+//     const metaData = await googleSheets.spreadsheets.get({
+//       spreadsheetId,
+//     });
 
-    // Read rows from spreadsheet
-    const getRows = await googleSheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: "Hoja 1!A:A",
-    });
+//     // Read rows from spreadsheet
+//     const getRows = await googleSheets.spreadsheets.values.get({
+//       spreadsheetId,
+//       range: "Hoja 1!A:A",
+//     });
 
-    const rows = getRows.data.values || []; // Obtener los valores de las filas
+//     const rows = getRows.data.values || []; // Obtener los valores de las filas
 
-    // Call scrapeData initially
-    const scrapedData = await scrapeData();
-    const [dataBtc, buyPriceBtc, sellPriceBtc] = scrapedData;
-    const updatedRows = [...rows, [getCurrentDateTime(), dataBtc, buyPriceBtc, sellPriceBtc]]; // Agregar los datos raspados a las filas existentes
+//     // Call scrapeData initially
+//     const scrapedData = await scrapeData();
+//     const [dataBtc, buyPriceBtc, sellPriceBtc] = scrapedData;
+//     const updatedRows = [...rows, [getCurrentDateTime(), dataBtc, buyPriceBtc, sellPriceBtc]]; // Agregar los datos raspados a las filas existentes
 
-    // Update spreadsheet
-    const resource = {
-      values: updatedRows,
-    };
+//     // Update spreadsheet
+//     const resource = {
+//       values: updatedRows,
+//     };
 
-    await googleSheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: "Hoja 1!A:B",
-      valueInputOption: "USER_ENTERED",
-      resource,
-    });
+//     await googleSheets.spreadsheets.values.update({
+//       spreadsheetId,
+//       range: "Hoja 1!A:B",
+//       valueInputOption: "USER_ENTERED",
+//       resource,
+//     });
 
-    res.send(updatedRows);
+//     res.send(updatedRows);
 
     
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Error en el servidor");
-  }
-});
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).send("Error en el servidor");
+//   }
+// });
 
 let initialBtcAmount; // Cantidad inicial en BTC
 let totalEur; // Total de euros
@@ -435,7 +435,7 @@ if (action === "compra") {
     } catch (error) {
       console.error("Error:", error);
     }
-  }, 60000);
+  }, 300000);
   // 5 minutos (300,000 milisegundos)
 
 
@@ -477,7 +477,7 @@ const fourHourInMiliSeconds = 4 * 60 * 60 * 1000;
 const dayInMiliSeconds = 24 * 60 * 60 * 1000;
 
 
-setInterval(whalesDifferences, 60000);
+setInterval(whalesDifferences, 300000);
 // setInterval(oneHourWhalesDifference, 3600000);
 setInterval(fourHourWhalesDifference, fourHourInMiliSeconds);
 setInterval(dailyWhalesDifference, dayInMiliSeconds);
